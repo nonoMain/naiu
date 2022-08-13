@@ -1,0 +1,92 @@
+#!/usr/bin/env -S bash -e
+
+[ -z $PR_DIR ] && export PR_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../"
+
+set -a
+source $PR_DIR/libs/general.sh
+set +a
+
+help_message_opt ()
+{
+	echo \
+"
+Usage: naiu-iso [options]
+
+options:
+    -l, --list            list show all the commands available
+    -c, --command         run a command
+    -r, --root <path>     choose root (in case you are on a live iso)
+    -h, --help            show this help message
+"
+}
+
+help_message_cmd ()
+{
+	echo \
+"
+Usage: naiu-iso [options] -c [command]
+
+command:
+    print-label          print the label for this util
+    log <path>           print the logs saved in <path>
+"
+}
+
+print_label ()
+{
+	echo_msg_tty "             ███╗░░██╗░█████╗░██╗██╗░░░██╗░░░░░░██╗░██████╗░█████╗░"
+	echo_msg_tty "             ████╗░██║██╔══██╗██║██║░░░██║░░░░░░██║██╔════╝██╔══██╗"
+	echo_msg_tty "             ██╔██╗██║███████║██║██║░░░██║█████╗██║╚█████╗░██║░░██║"
+	echo_msg_tty "             ██║╚████║██╔══██║██║██║░░░██║╚════╝██║░╚═══██╗██║░░██║"
+	echo_msg_tty "             ██║░╚███║██║░░██║██║╚██████╔╝░░░░░░██║██████╔╝╚█████╔╝"
+	echo_msg_tty "             ╚═╝░░╚══╝╚═╝░░╚═╝╚═╝░╚═════╝░░░░░░░╚═╝╚═════╝░░╚════╝░"
+	echo_msg_tty "--------------------------------------------------------------------------------"
+	echo_msg_tty "                          ISO releated stuff"
+	echo_msg_tty "--------------------------------------------------------------------------------"
+}
+
+# --- Main section
+
+[ $# -eq 0 ] && help_message_opt
+
+ARGC=$#
+while [ $# -gt 0 ]; do
+	case $1 in
+		-h | --help)
+			help_message_opt
+			exit
+			;;
+		-l | --list)
+			help_message_cmd
+			exit
+			;;
+		-- )
+			;;
+		*)
+			echo_error_msg "Unknown option [$1]"
+			help_message_opt
+			exit
+			;;
+		-c | --command)
+			shift
+			[ $# -eq 0 ] && help_message_cmd
+			while [ $# -gt 0 ]; do
+				case $1 in
+					print-label )
+						print_label
+						shift
+						;;
+					-- )
+						echo "reached end of options"
+						break
+						;;
+					*)
+						echo_error_msg "Unknown command [$1]"
+						help_message_cmd
+						exit
+						;;
+				esac
+			done
+			;;
+	esac
+done
