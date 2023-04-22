@@ -1,0 +1,40 @@
+#!/usr/bin/env -S bash -e
+# This command has the --description flag implemented
+
+cat_description () {
+cat << EOF
+my description
+EOF
+}
+
+cat_help () {
+cat_description
+cat << EOF
+my help page
+EOF
+}
+
+case "$1" in
+	--description)
+		cat_description
+		;;
+	-h|--help)
+		cat_help
+		;;
+	get)
+		eval "printf \$$2"
+		;;
+	set)
+		shift # shift past the 'set' command
+		while [ $# -gt 0 ]; do
+			var="${1%%=*}"
+			val="${1#*=}"
+			sed -i "/^$var=/d" $TMP_ENV_FILE
+			echo "$var='$val'" >> $TMP_ENV_FILE
+			shift
+		done
+		;;
+	unset)
+		sed -i "/^$2=/d" $TMP_ENV_FILE
+		;;
+esac

@@ -1,0 +1,12 @@
+#!/usr/bin/env -S bash -e
+echo_msg "Writing mkinitcpio.conf"
+# default mkinitcpio hooks
+hooks="base systemd autodetect keyboard sd-vconsole modconf block filesystems fsck"
+# add sd-encrypt if needed
+if [ -n "$NEEDED_ENCRYPT_HOOK" ]; then
+hooks="$hooks sd-encrypt"
+fi
+# write the hooks to the mkinitcpio.conf file
+cat > $ROOT_MNT/etc/mkinitcpio.conf <<EOF
+HOOKS=($hooks)
+EOF

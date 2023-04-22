@@ -1,0 +1,22 @@
+#!/usr/bin/env -S bash -e
+hypervisor=$(systemd-detect-virt)
+case $hypervisor in
+	kvm)
+		echo_msg "KVM has been detected, setting up guest tools."
+		$PR_DIR/commands/pacstrap qemu-guest-agent
+		$PR_DIR/commands/enable qemu-guest-agent
+		;;
+	vmware)
+		echo_msg "VMWare has been detected, setting up guest tools."
+		$PR_DIR/commands/pacstrap open-vm-tools
+		$PR_DIR/commands/enable vmtoolsd vmware-vmblock-fuse
+		;;
+	oracle)
+		echo_msg "VirtualBox has been detected, setting up guest tools."
+		$PR_DIR/commands/pacstrap virtualbox-guest-utils &>/dev/null
+		$PR_DIR/commands/enable vboxservice
+		;;
+	*)
+		echo_msg "No hypervisor was detected, not setting up any guest tools"
+		;;
+esac

@@ -1,0 +1,50 @@
+#!/usr/bin/env -S bash -e
+# This command has the --description flag implemented
+
+enable_service () {
+	local service=$1; shift
+	systemctl enable $service --root=$ROOT_MNT && echo_ok_msg "Enabled $service service" || ( echo_error_msg "Couldn't enable $service service" && handle_failed_iteration "Skipping enabling $service service" )
+}
+
+enable_services_from_file () {
+	local filename="$1"; shift
+	perform_command_with_single_line_arg_on_file 'enable_service' 'Enabling' "$filename"
+}
+
+cat_description () {
+cat << EOF
+my description
+EOF
+}
+
+cat_help () {
+cat_description
+cat << EOF
+my help page
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+	case $1 in
+		--description)
+			cat_description
+			break
+			;;
+		-h|--help)
+			cat_help
+			break
+			;;
+		-f|--file)
+			shift # shift to move to the actual filename
+			enable_services_from_file "$1"
+			;;
+		--skip-failed-arguments)
+			local_skip_failed_flag
+			;;
+		*)
+			echo_msg "Enabling S:$1"
+			enable_service "$1"
+			;;
+	esac
+	shift
+done

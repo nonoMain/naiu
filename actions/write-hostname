@@ -1,0 +1,12 @@
+#!/usr/bin/env -S bash -e
+if [ $# -eq 0 ]; then
+	echo_warning_msg "No hostname provided. Using default hostname ($hostname)"
+else
+	hostname="$1"; shift
+fi
+echo_msg "Writing hosts file (hostname: $hostname)"
+cat > $ROOT_MNT/etc/hosts <<EOF
+127.0.0.1   localhost
+::1         localhost
+127.0.1.1   $hostname.localdomain   $hostname
+EOF

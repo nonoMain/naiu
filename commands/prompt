@@ -1,0 +1,32 @@
+#!/usr/bin/env -S bash -e
+# This command has the --description flag implemented
+
+cat_help () {
+cat << EOF
+my help page
+EOF
+}
+while [[ $# -gt 0 ]]; do
+	case $1 in
+		-h|--help|--description)
+			cat_help
+			exit
+			;;
+	esac
+	shift
+done
+
+# prompt
+echo_msg "                     ███╗░░██╗░░░░█████╗░░░░██╗░░░██╗░░░██╗"
+echo_msg "                     ████╗░██║░░░██╔══██╗░░░██║░░░██║░░░██║"
+echo_msg "                     ██╔██╗██║░░░███████║░░░██║░░░██║░░░██║"
+echo_msg "                     ██║╚████║░░░██╔══██║░░░██║░░░██║░░░██║"
+echo_msg "                     ██║░╚███║██╗██║░░██║██╗██║██╗╚██████╔╝"
+echo_msg "                     ╚═╝░░╚══╝╚═╝╚═╝░░╚═╝╚═╝╚═╝╚═╝░╚═════╝░"
+echo_msg "--------------------------------------------------------------------------------"
+echo_msg "                        Nonomain Arch Installation Utilities"
+echo_msg "                             Easy | Quick |  Custom"
+echo_msg "                 Installer script for Arch Linux written by @nonoMain"
+echo_msg "--------------------------------------------------------------------------------"
+echo_msg "  * Run '$0 help' for more info"
+echo_msg "  * Check out our github page: https://www.github.com/nonoMain/naiu"

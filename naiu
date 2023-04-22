@@ -1,0 +1,70 @@
+#!/usr/bin/env -S bash -e
+
+# Set the project directory to the directory of the current script
+export PR_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Enable the 'set -a' option to export all environment variables automatically
+set -a
+
+# Load the environment variables from the '.env' file
+source "$PR_DIR/.env"
+
+# Load the library functions from the 'naiu-general.sh' file
+source "$PR_DIR/.libs/naiu-general.sh"
+
+# Disable the 'set -a' option
+set +a
+
+### Main ###
+# Check if any arguments were passed to the script
+if [ $# -eq 0 ]; then
+	# If no arguments were passed, display the help message
+	source "$PR_DIR/commands/help"
+	exit
+fi
+
+## Flags / Options section ##
+
+# Loop over all command-line arguments
+while true; do
+	case "$1" in
+	-h | --help)
+		# If the '-h' or '--help' flag was passed, display the help message and exit
+		source "$PR_DIR/commands/help"
+		exit
+		;;
+	--no-color)
+		# If the '--no-color' flag was passed, disable colored output
+		NO_COLOR=1
+		bash_lib_define_colors
+		shift
+		;;
+	-- )
+		# If the '--' separator was found, stop processing options
+		shift
+		break
+		;;
+	-*)
+		# If an unknown option was found, display an error message and exit
+		echo_error_msg "Unknown option [$1]"
+		source "$PR_DIR/commands/help"
+		exit
+		;;
+	* )
+		# If a non-option argument was found, stop processing options (to allow to parse commands)
+		break
+		;;
+	esac
+done
+
+## Command running section ##
+# Check if the specified command exists
+if test -f "$PR_DIR/commands/$1"; then
+	# If the command exists, execute it
+	command=$1; shift
+	source "$PR_DIR/commands/$command"
+else
+	# If the command doesn't exist, display an error message and exit
+	echo_error_msg "No such command as \"$1\" in the commands directory"
+	exit
+fi

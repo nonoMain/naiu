@@ -1,0 +1,71 @@
+#!/usr/bin/env -S bash -e
+# This command has the --description flag implemented
+
+pacstrap_package () {
+	local package=$1; shift
+	if pacstrap $ROOT_MNT "$package"; then
+		echo_ok_msg "Successfully installed package: $package"
+	else
+		echo_error_msg "Failed to install package: $package"
+		handle_failed_iteration "Skipping failed package: $package"
+	fi
+}
+
+pacstrap_packages_from_file () {
+	local filename="$1"; shift
+	perform_command_with_single_line_arg_on_file 'pacstrap_package' 'Pacstrapping' "$filename"
+}
+
+cat_description () {
+cat << EOF
+pacstraps packages to root mount point ($ROOT_MNT)
+EOF
+}
+
+cat_help () {
+cat_description
+cat << EOF
+Usage: pacstrap [OPTIONS] PACKAGES...
+           can be used with multiple packages at once or an args-file
+
+Utility script for pacstrapping packages to a target root file system.
+
+OPTIONS:
+  --description           Show a short description of the command
+  -h, --help              Show this page
+  -f, --file <filename>   Install packages listed in a file.
+  --skip-failed-arguments
+                          Continue installing packages even if some fail.
+
+EXAMPLES:
+  pacstrap bash tree           # Install the bash and tree packages.
+  pacstrap -f packages.txt     # Install packages listed in the packages.txt file.
+  pacstrap --skip-failed-arguments bash tree bad-package ls
+                                    # Install the bash, tree, and ls packages, and skip the bad-package if it fails.
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+	case $1 in
+		--description)
+			cat_description
+			break
+			;;
+		-h|--help)
+			cat_help
+			break
+			;;
+		-f|--file)
+			shift # shift to move to the actual filename
+			pacstrap_packages_from_file "$1"
+			;;
+		--skip-failed-arguments)
+			local_skip_failed_flag
+			;;
+		*)
+			echo_msg "Pacstrapping P:$1"
+			pacstrap_package "$1"
+			;;
+	esac
+	shift
+done

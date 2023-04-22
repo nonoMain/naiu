@@ -1,0 +1,4 @@
+#!/usr/bin/env -S bash -e
+echo_msg "Setting up bluetooth (bluz)"
+$PR_DIR/commands/pacstrap bluez bluez-utils
+$PR_DIR/commands/enable bluetooth

@@ -1,0 +1,20 @@
+#!/usr/bin/env -S bash -e
+# This command has the --description flag implemented
+
+cat_help () {
+cat << EOF
+my help page
+EOF
+}
+while [[ $# -gt 0 ]]; do
+	case $1 in
+		-h|--help|--description)
+			cat_help
+			exit
+			;;
+	esac
+	shift
+done
+
+rm -f $ENV_FILE && echo_ok_msg "Deleted variables" || echo_error_msg "Couldn't delete variables"
+rm -f $TMP_ENV_FILE && echo_ok_msg "Deleted temporary variables" || echo_error_msg "Couldn't delete temporary variables"

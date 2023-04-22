@@ -1,0 +1,19 @@
+#!/usr/bin/env -S bash -e
+# This command has the --description flag implemented
+
+cat_help () {
+cat << EOF
+my help page
+EOF
+}
+while [[ $# -gt 0 ]]; do
+	case $1 in
+		-h|--help|--description)
+			cat_help
+			exit
+			;;
+	esac
+	shift
+done
+
+find "$PR_DIR/commands" -type f -name "*" -exec basename {} \;

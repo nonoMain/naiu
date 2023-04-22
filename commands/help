@@ -1,0 +1,60 @@
+#!/usr/bin/env -S bash -e
+# This command has the --description flag implemented
+
+cat_help () {
+cat << EOF
+show this help message
+EOF
+}
+
+insert_descriptions () {
+	local command_for_listing="$1"; shift
+	local path="$1"; shift
+while read -r cmd_file; do
+	description='No --description option'
+	if grep -q '# This command has the --description flag implemented' "$path/$cmd_file"; then
+		description=$($path/$cmd_file --description)
+	fi
+	printf "\t%-20s %s\n" "$cmd_file" "$description"
+done < <($command_for_listing)
+}
+
+while [[ $# -gt 0 ]]; do
+	case $1 in
+		-h|--help|--description)
+			cat_help
+			exit
+			;;
+	esac
+	shift
+done
+
+# Print the help message using a here document
+cat << EOF
+NAIU - Nonomain arch install utilities
+Usage: $0 [options] [command] [arguments] [options]
+Located at: $PR_DIR
+
+general options:
+** Note: you cannot combine options as one command line argument e.g: -la **
+    -h, --help            show this help message
+
+commands are small snippets that allows basic operations
+they are found in $PR_DIR/commands
+existing commands:
+EOF
+
+insert_descriptions "$PR_DIR/commands/commands" "$PR_DIR/commands"
+
+cat << EOF
+
+actions are snippets that perform a unified action such as 'setting up networking'
+they are found in $PR_DIR/actions
+existing actions:
+EOF
+
+insert_descriptions "$PR_DIR/commands/actions" "$PR_DIR/actions"
+
+cat << EOF
+** For more info about the project take a look on our github page: https://www.github.com/nonoMain/naiu **
+EOF

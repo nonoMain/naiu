@@ -1,0 +1,44 @@
+#!/usr/bin/env -S bash -e
+# This command has the --description flag implemented
+
+cat_description () {
+cat << EOF
+this command is special, it runs other 'command' like scripts
+    that are called actions.
+EOF
+}
+
+cat_help () {
+cat_description
+cat << EOF
+    actions are small pieces of bash that are performing a unified action such as 'setting up networkManager'
+	* if you want to see what actions are available you can look at the '$0 help' command or run '$0 actions'
+Usage $0 run <action>
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+	case $1 in
+		--description)
+			cat_description
+			break
+			;;
+		-h|--help)
+			cat_help
+			break
+			;;
+		*)
+			if test -f "$PR_DIR/actions/$1"; then
+				# If the action exists, execute it
+				action=$1; shift
+				source "$PR_DIR/actions/$action"
+			else
+				# If the command doesn't exist, display an error message and exit
+				echo_error_msg "No such action as \"$1\" in the actions directory"
+				handle_failed_iteration "Skipping missing command"
+			fi
+			;;
+	esac
+	shift
+done
+

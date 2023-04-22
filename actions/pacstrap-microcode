@@ -1,0 +1,10 @@
+#!/usr/bin/env -S bash -e
+proc_type=$(lscpu)
+if grep -E "GenuineIntel" <<< ${proc_type}; then
+	microcode='intel-ucode'
+	echo_msg "Intel microcode was detected"
+elif grep -E "AuthenticAMD" <<< ${proc_type}; then
+	microcode='amd-ucode'
+	echo_msg "AMD microcode was detected"
+fi
+$PR_DIR/commands/pacstrap $microcode

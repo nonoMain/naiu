@@ -1,0 +1,4 @@
+#!/usr/bin/env -S bash -e
+echo_msg "Setting up network manager"
+$PR_DIR/commands/pacstrap networkmanager
+$PR_DIR/commands/enable NetworkManager
